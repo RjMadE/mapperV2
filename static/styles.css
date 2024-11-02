@@ -1,0 +1,12 @@
+/* File: static/styles.css */
+
+#map {
+height: 600px;
+width: 100%;
+}
+
+.grid-line {
+stroke: red;
+stroke-width: 0.5;
+opacity: 0.6;
+}

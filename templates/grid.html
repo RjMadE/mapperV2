@@ -1,0 +1,28 @@
+<!-- File: templates/map_grid.html -->
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UK Map with Grid Overlay</title>
+
+    <!-- Link to Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+
+<body>
+    <h1>Interactive Map of the UK with Grid Overlay</h1>
+    <div id="map"></div>
+    <div id="cell-info">
+        <strong>Current Cell:</strong> <span id="cell-coordinates">N/A</span>
+    </div>
+
+    <!-- Link to Leaflet JavaScript library -->
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <script src="{{ url_for('static', filename='scripts.js') }}"></script>
+    <script src="{{ url_for('static', filename='iconControl.js') }}"></script>
+</body>
+
+</html>
