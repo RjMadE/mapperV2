@@ -9,37 +9,51 @@ L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     attribution: '© OpenStreetMap contributors'
 }).addTo(map);
 
-// Define the step size for the virtual grid
-var stepLat = 0.00001;  // Latitude step for the grid
-var stepLng = 0.00001;  // Longitude step for the grid
+// Define step size for the grid
+var stepLat = 0.001;
+var stepLng = 0.001;
 
-// Track the user's current cell
-var currentCell = { latIndex: null, lngIndex: null };
+// Maintain a record of all the cells that have been passed through
+let allVisitedCells = {};
 
-// Function to determine which cell the given latitude and longitude falls into
-function getCell(lat, lng) {
-    var latIndex = Math.floor(lat / stepLat);
-    var lngIndex = Math.floor(lng / stepLng);
-    return { latIndex: latIndex, lngIndex: lngIndex };
-}
+// Create a layer group to manage all the cells
+var cellLayerGroup = L.layerGroup().addTo(map);
 
-// Function to handle user movement and update cell tracking
-function onMapMouseMove(e) {
-    // Get the latitude and longitude from the event
-    var lat = e.latlng.lat;
-    var lng = e.latlng.lng;
+// Function to add a cell to visited cells and render it
+function visitCell(lat, lng) {
+    const cellKey = getCellKey(lat, lng);
 
-    // Determine which cell the user is in
-    var newCell = getCell(lat, lng);
-
-    // Check if the user has moved to a different cell
-    if (newCell.latIndex !== currentCell.latIndex || newCell.lngIndex !== currentCell.lngIndex) {
-        currentCell = newCell;
-        console.log(`User moved to cell: Latitude Index ${currentCell.latIndex}, Longitude Index ${currentCell.lngIndex}`);
+    if (!allVisitedCells[cellKey]) {
+        allVisitedCells[cellKey] = true;
         
-        // Here you can add logic to track the route or store the cell data
+        // Extract latitude and longitude for rendering the rectangle
+        let [latIndex, lngIndex] = cellKey.split(',').map(Number);
+        let latStart = latIndex * stepLat;
+        let lngStart = lngIndex * stepLng;
+
+        // Define the bounds of the new cell
+        var cellBounds = [[latStart, lngStart], [latStart + stepLat, lngStart + stepLng]];
+
+        // Create a rectangle to represent the cell
+        var gridCell = L.rectangle(cellBounds, {
+            color: "red",
+            weight: 1,
+            fillOpacity: 0.4,
+            stroke: false,
+        }).addTo(cellLayerGroup);
+        
+        console.log(`New Cell Visited: ${cellKey}`);  // Debugging
     }
 }
 
-// Attach the mouse move event to track user's movement across the map
-map.on('mousemove', onMapMouseMove);
+// Function to get a unique cell key
+function getCellKey(lat, lng) {
+    var latIndex = Math.floor(lat / stepLat);
+    var lngIndex = Math.floor(lng / stepLng);
+    return `${latIndex},${lngIndex}`;
+}
+
+// Event listener to handle when the map moves or zooms
+map.on('moveend', function () {
+    console.log("Map moved, nothing to redraw here with layer group.");  // Debugging
+});
